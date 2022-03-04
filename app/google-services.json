@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "674340831071",
+    "firebase_url": "https://mosis-projekat-4c877-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "mosis-projekat-4c877",
+    "storage_bucket": "mosis-projekat-4c877.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:674340831071:android:fed96a9f62d7e07633c0ea",
+        "android_client_info": {
+          "package_name": "rs.elfak.mosis.projekat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "674340831071-989ngltpei0b8ir6t2i53dp8iuh6skhg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU63-LyM6PtDPn3kro1zWqv5jCw9rDM1o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "674340831071-989ngltpei0b8ir6t2i53dp8iuh6skhg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

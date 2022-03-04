@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Projekat</string>
+    <string name="password">Enter password</string>
+    <string name="login">Log In</string>
+    <string name="not_registered">Haven\'t registered yet?</string>
+    <string name="click_to_signup">Click here to signup.</string>
+    <string name="username">Enter username</string>
+    <string name="firstname">Enter first name</string>
+    <string name="lastname">Enter last name</string>
+    <string name="phone">Enter phone number</string>
+    <string name="signup">Sign Up</string>
+</resources>
