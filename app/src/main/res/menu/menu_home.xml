@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="rs.elfak.mosis.luka.lab2.HomeActivity">
+    <item
+        android:id="@+id/show_map_item"
+        android:title="@string/new_object"
+        android:orderInCategory="100"
+        android:icon="@drawable/common_google_signin_btn_icon_light_focused"/>
+    <item
+        android:id="@+id/my_places_list_item"
+        android:title="@string/show_all_users"
+        android:orderInCategory="100"
+        android:checkable="true"
+        android:icon="@drawable/googleg_disabled_color_18"/>
+    <item
+        android:id="@+id/about_item"
+        android:title="About"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_launcher_background"/>
+</menu>

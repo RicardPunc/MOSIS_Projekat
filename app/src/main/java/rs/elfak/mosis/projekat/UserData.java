@@ -8,7 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -155,29 +158,37 @@ public class UserData {
         return 0;
     }
 
-    static boolean success = false;
+    static User success = null;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public boolean logIn(String username, String logInPassword) {
+    public void logIn(Object act, String username, String logInPassword) {
+
+        MainActivity activity = (MainActivity) act;
 
         String key = Base64.getEncoder().encodeToString(username.getBytes());
-        myRef.child(FIREBASE_CHILD).child(key).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                                                                              @Override
-                                                                              public void onSuccess(DataSnapshot dataSnapshot) {
-                                                                                  Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-//                                                                                  String savedPass = (String)map.get("password");
-                                                                                  String username = (String) map.get("username");
-                                                                                  String firstname = (String) map.get("firstname");
-                                                                                  String lastname = (String) map.get("lastname");
-                                                                                  String phone = (String) map.get("phone");
-                                                                                  String password = (String) map.get("password");
-                                                                                  String photo =(String) map.get("photo");
-                                                                                  User user = new User(username, firstname, lastname, password, phone, photo);
-                                                                                  if (user.getPassword().equals(logInPassword)) success = true;
-                                                                              }
-                                                                          });
+        myRef.child(FIREBASE_CHILD).child(key).get().addOnSuccessListener (new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(@NonNull DataSnapshot dataSnapshot) {
+                //activity.logIn_btn.setEnabled(false);
+                if (dataSnapshot.getValue() != null) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
-        return success;
+                    String username = (String) map.get("username");
+                    String firstname = (String) map.get("firstname");
+                    String lastname = (String) map.get("lastname");
+                    String phone = (String) map.get("phone");
+                    String password = (String) map.get("password");
+                    String photo = (String) map.get("photo");
+                    User user = new User(username, firstname, lastname, password, phone, photo);
+                    if (user.getPassword().equals(logInPassword)) activity.logInSuccess(user);
+                    else activity.logInFailure();
+                }
+                else
+                {
+                    activity.logInFailure();
+                }
+            }
+        } );
 
     }
 }
