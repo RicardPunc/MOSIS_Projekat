@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.io.Serializable;
 
 @IgnoreExtraProperties
@@ -14,7 +16,8 @@ public class User implements Serializable {
     private String lastname;
     private String password;
     private String phone;
-
+    private int score;
+    private GeoPoint location;
     private String photo_str;
 
 
@@ -24,6 +27,8 @@ public class User implements Serializable {
         this.lastname = lastname;
         this.password = password;
         this.phone = phone;
+        this.score = 0;
+        this.location = new GeoPoint(0.0, 0.0, 0.0);
         this.photo_str = photo;
     }
 
@@ -73,5 +78,21 @@ public class User implements Serializable {
 
     public void setPhoto_str(String photo_str) {
         this.photo_str = photo_str;
+    }
+
+    public GeoPoint getLocation() {
+        return location;
+    }
+
+    public void setLocation(GeoPoint location) {
+        this.location = location;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

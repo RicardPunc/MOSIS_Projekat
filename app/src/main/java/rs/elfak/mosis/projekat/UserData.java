@@ -19,6 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -76,58 +78,28 @@ public class UserData {
     private void getAllUsernames(Map<String, Object> value) {
         ArrayList<String> allUsernames = new ArrayList<>();
 
-        //iterate through each user, ignoring their UID
-        for (Map.Entry<String, Object> entry : value.entrySet()){
+        if (value != null) {
+            //iterate through each user, ignoring their UID
+            for (Map.Entry<String, Object> entry : value.entrySet()){
 
-            //Get user map
-            Map singleUser = (Map) entry.getValue();
-            //Get phone field and append to list
-            allUsernames.add((String) singleUser.get("username"));
+                //Get user map
+                Map singleUser = (Map) entry.getValue();
+                //Get phone field and append to list
+                allUsernames.add((String) singleUser.get("username"));
+            }
+
+            this.usernames = allUsernames;
         }
 
-        this.usernames = allUsernames;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void updateLocation(User user) {
+        byte[] bytes = user.getUsername().getBytes();
+        String key = Base64.getEncoder().encodeToString(bytes);
 
-//    ValueEventListener parentEventListener = new ValueEventListener() {
-//        @Override
-//        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//            User user = snapshot.getValue(User.class);
-//            System.out.println(snapshot.getKey() + " is named " + user.getFirstName());
-//        }
-//
-//        @Override
-//        public void onCancelled(@NonNull DatabaseError error) {
-//
-//        }
-//    };
-
-//    ChildEventListener childEventListener = new ChildEventListener() {
-//        @Override
-//        public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//        }
-//
-//        @Override
-//        public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//        }
-//
-//        @Override
-//        public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//
-//        }
-//
-//        @Override
-//        public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//        }
-//
-//        @Override
-//        public void onCancelled(@NonNull DatabaseError error) {
-//
-//        }
-//    };
+        myRef.child(FIREBASE_CHILD).child(key).setValue(user);
+    }
 
 
     private static class SingletonHolder {
@@ -138,12 +110,6 @@ public class UserData {
         return SingletonHolder.instance;
     }
 
-//    public boolean checkUsername(String username) {
-//        if (!this.usernames.contains(username)) {
-//            return true;
-//        }
-//        return false;
-//    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public int signUp(User user) {

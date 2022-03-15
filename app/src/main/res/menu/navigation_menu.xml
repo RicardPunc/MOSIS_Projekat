@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="HardcodedText">
 
     <item
@@ -8,8 +9,19 @@
         android:title="My Account" />
 
     <item
-        android:id="@+id/nav_settings"
-        android:title="@string/show_all_users" />
+        android:id="@+id/nav_show_all_users"
+        android:title="@string/show_all_users"
+        android:checkable="true"/>
+
+    <item
+        android:id="@+id/nav_rankings"
+        android:title="@string/scoreboard" />
+
+    <item
+        android:id="@+id/search_bar"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/nav_logout"
