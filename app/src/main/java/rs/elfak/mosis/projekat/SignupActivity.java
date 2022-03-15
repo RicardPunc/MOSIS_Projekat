@@ -1,5 +1,6 @@
 package rs.elfak.mosis.projekat;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,6 +12,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.IntentService;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -83,9 +85,10 @@ public class SignupActivity extends AppCompatActivity {
 
         Button signup_btn = findViewById(R.id.signup_btn);
         signup_btn.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ResourceAsColor")
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
+                signup_btn.setEnabled(false);
                 String username = username_et.getText().toString();
                 String firstname = firstname_et.getText().toString();
                 String lastname = lastname_et.getText().toString();
@@ -97,9 +100,17 @@ public class SignupActivity extends AppCompatActivity {
                     int signupRequestCode = userData.signUp(user);
 
                     if (signupRequestCode == USERNAME_EXISTS) {
+                        signup_btn.setEnabled(true);
                         username_et.setError("Username already exists!");
                     }
+                    else {
+                        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
 
+                }
+                else {
+                    signup_btn.setEnabled(true);
                 }
 
             }
@@ -119,7 +130,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() < 3){
-                    username_et.setError("Username must be at least lenght of 3!");
+                    username_et.setError("Username must be at least length of 3!");
                 }
             }
         });
@@ -133,7 +144,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() < 3){
-                    firstname_et.setError("First name must be at least lenght of 3!");
+                    firstname_et.setError("First name must be at least length of 3!");
                 }
             }
 
@@ -152,7 +163,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.length() < 3){
-                    lastname_et.setError("Last name must be at least lenght of 3!");
+                    lastname_et.setError("Last name must be at least length of 3!");
                 }
             }
 
@@ -183,22 +194,21 @@ public class SignupActivity extends AppCompatActivity {
 
     }
 
-    @SuppressLint("ResourceAsColor")
     private boolean validateFields(String username, String firstName, String lastname, String password, String phone) {
         boolean valid = true;
 
         if (username.length() < 3){
-            username_et.setError("Username must be at least lenght of 3!");
+            username_et.setError("Username must be at least length of 3!");
             valid = false;
         }
 
         if (firstName.length() < 3){
-            firstname_et.setError("First name must be at least lenght of 3!");
+            firstname_et.setError("First name must be at least length of 3!");
             valid = false;
         }
 
         if (lastname.length() < 3){
-            lastname_et.setError("Last name must be at least lenght of 3!");
+            lastname_et.setError("Last name must be at least length of 3!");
             valid = false;
         }
 
