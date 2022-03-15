@@ -52,8 +52,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 public class HomeActivity extends AppCompatActivity {
 
     private static final int PERMISSION_ACCESS_FINE_LOCATION = 1;
-    private static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
-    private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 3;
     private static final int REQUEST_GPS = 99;
     public User user = null;
     public MapView map = null;
@@ -87,11 +85,6 @@ public class HomeActivity extends AppCompatActivity {
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, PERMISSION_READ_EXTERNAL_STORAGE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
-
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -105,14 +98,16 @@ public class HomeActivity extends AppCompatActivity {
             setMyLocationOverlay();
 
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            GeoPoint geoPointLocation = new GeoPoint(location.getLatitude(), location.getLongitude(), location.getAltitude());
-            user.setLocation(geoPointLocation);
 
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 //Build the alert dialog
                 showGpsAlert();
             } else {
+                GeoPoint location = myLocationOverlay.getMyLocation();
+                if (location != null) {
+                    user.setLocation( location );
+                }
+
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override

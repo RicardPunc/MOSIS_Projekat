@@ -22,13 +22,25 @@ public class User implements Serializable {
 
 
     public User(String username, String firstName, String lastname, String password, String phone, String photo) {
+        double asda = 0.0;
         this.username = username;
         this.firstName = firstName;
         this.lastname = lastname;
         this.password = password;
         this.phone = phone;
         this.score = 0;
-        this.location = new GeoPoint(0.0, 0.0, 0.0);
+        this.location = new GeoPoint(36.114647, -115.172813, 610.000001);
+        this.photo_str = photo;
+    }
+
+    public User(String username, String firstName, String lastname, String password, String phone, String photo, GeoPoint location) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastname = lastname;
+        this.password = password;
+        this.phone = phone;
+        this.score = 0;
+        this.location = location;
         this.photo_str = photo;
     }
 

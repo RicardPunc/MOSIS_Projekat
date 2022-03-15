@@ -145,7 +145,9 @@ public class UserData {
                     String phone = (String) map.get("phone");
                     String password = (String) map.get("password");
                     String photo = (String) map.get("photo");
-                    User user = new User(username, firstname, lastname, password, phone, photo);
+                    Map<String, Double> location = (Map<String, Double>) map.get("location");
+                    GeoPoint locationPoint = new GeoPoint(location.get("latitude"), location.get("longitude"), location.get("altitude"));
+                    User user = new User(username, firstname, lastname, password, phone, photo, locationPoint);
                     if (user.getPassword().equals(logInPassword)) activity.logInSuccess(user);
                     else activity.logInFailure();
                 }

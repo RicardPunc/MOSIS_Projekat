@@ -38,7 +38,7 @@ public class EditPlaceActivity extends AppCompatActivity {
         System.out.println(location.getLatitude());
 
         lat_et.setText(String.valueOf(df.format(location.getLatitude())));
-        lon_et.setText(String.valueOf(df.format(location.getLatitude())));
-        alt_et.setText(String.valueOf(df.format(location.getLatitude())));
+        lon_et.setText(String.valueOf(df.format(location.getLongitude())));
+        alt_et.setText(String.valueOf(df.format(location.getAltitude())));
     }
 }

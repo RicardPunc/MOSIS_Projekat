@@ -1,9 +1,14 @@
 package rs.elfak.mosis.projekat;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -13,10 +18,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.Permission;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final int PERMISSIONS_ALL = 1;
 
     public Button logIn_btn;
     public EditText password_et;
+    public EditText username_et;
+    private static final String[] permissions= new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        EditText username_et = findViewById(R.id.username_login_et);
+        username_et = findViewById(R.id.username_login_et);
         password_et = findViewById(R.id.password_login_et);
 
         logIn_btn = findViewById(R.id.logIn_btn);
@@ -36,10 +50,19 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                logIn_btn.setEnabled(false);
-                String username = username_et.getText().toString();
-                String password = password_et.getText().toString();
-                UserData.getInstance().logIn(MainActivity.this, username, password);
+//                askForPermissions();
+//                if (permissionsEnabled()){
+//                    logIn_btn.setEnabled(false);
+//                    String username = username_et.getText().toString();
+//                    String password = password_et.getText().toString();
+//                    UserData.getInstance().logIn(MainActivity.this, username, password);
+//                }
+                if (hasPermissions(MainActivity.this, permissions)){
+                    logIn();
+                }
+                else {
+                        ActivityCompat.requestPermissions(MainActivity.this, permissions, PERMISSIONS_ALL);
+                }
             }
         });
 
@@ -51,6 +74,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (hasPermissions(this, permissions)) {
+            logIn();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        logIn_btn.setEnabled(true);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void logIn() {
+        logIn_btn.setEnabled(false);
+        String username = username_et.getText().toString();
+        String password = password_et.getText().toString();
+        UserData.getInstance().logIn(MainActivity.this, username, password);
+    }
+
+
 
     public void logInSuccess(User user) {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
