@@ -3,6 +3,7 @@ package rs.elfak.mosis.projekat;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -12,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,13 +52,6 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-//                askForPermissions();
-//                if (permissionsEnabled()){
-//                    logIn_btn.setEnabled(false);
-//                    String username = username_et.getText().toString();
-//                    String password = password_et.getText().toString();
-//                    UserData.getInstance().logIn(MainActivity.this, username, password);
-//                }
                 if (hasPermissions(MainActivity.this, permissions)){
                     logIn();
                 }
@@ -121,4 +116,5 @@ public class MainActivity extends AppCompatActivity {
         password_et.setError("Incorrect username or password.");
         logIn_btn.setEnabled(true);
     }
+
 }

@@ -7,15 +7,18 @@
     android:id="@+id/my_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#00FFFFFF"
     android:fitsSystemWindows="true"
     tools:context=".HomeActivity"
     tools:ignore="HardcodedText">
 
+
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        tools:visibility="visible">
 
         <org.osmdroid.views.MapView
             android:id="@+id/mapView"
@@ -39,6 +42,7 @@
         and shows the navigation drawer-->
     <!--include the menu created in the menu folder-->
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation_nv"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
