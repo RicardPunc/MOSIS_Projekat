@@ -60,10 +60,15 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.drawing.OsmBitmapShader;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import android.util.Base64;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -124,10 +129,18 @@ public class HomeActivity extends AppCompatActivity {
 
                         switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                Toast.makeText(HomeActivity.this, "Checked: " + isChecked, Toast.LENGTH_SHORT).show();
                                 item.setChecked(isChecked);
                             }
                         });
+
+                        if (item.isChecked()) {
+                            UserData.getInstance().getAllUsersLocations(HomeActivity.this);
+                        }
+                        else {
+                            if (map.getOverlays().contains(usersOverlay)) {
+                                map.getOverlays().remove(usersOverlay);
+                            }
+                        }
                         break;
                     }
                     case R.id.nav_scoreboard: {
@@ -256,16 +269,19 @@ public class HomeActivity extends AppCompatActivity {
         NavigationMenuItemView itemView = findViewById(R.id.nav_account);
         @SuppressLint("RestrictedApi") MenuItem menuItem =  itemView.getItemData();
         LinearLayout layout = (LinearLayout) menuItem.getActionView();
-        layout.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        CircleImageView circleImageView = new CircleImageView(this);
-        circleImageView.setImageBitmap(bitmap);
-        circleImageView.setForegroundGravity(Gravity.CENTER);
-        layout.addView(circleImageView);
-        TextView textView = new TextView(this);
-        textView.setText(user.getUsername());
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextSize(20.0f);
-        layout.addView(textView);
+        if (layout.getChildCount() < 2) {
+            layout.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+            CircleImageView circleImageView = new CircleImageView(this);
+            circleImageView.setImageBitmap(bitmap);
+            circleImageView.setForegroundGravity(Gravity.CENTER);
+            layout.addView(circleImageView);
+            TextView textView = new TextView(this);
+            textView.setText(user.getUsername());
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextSize(20.0f);
+            layout.addView(textView);
+        }
+
 
 
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
@@ -282,6 +298,36 @@ public class HomeActivity extends AppCompatActivity {
         if (mapController != null) {
             mapController.setZoom(17.5);
             myLocationOverlay.enableFollowLocation();
+        }
+    }
+
+    public void showUsers(List<User> users) {
+        List<OverlayItem> list = new ArrayList<OverlayItem>();
+        if (users.size() != 0) {
+            for (User user : users) {
+                OverlayItem item = new OverlayItem(user.getUsername(), user.getFirstname(), user.getLocation());
+
+                String photo = user.getPhoto_str();
+                byte [] encodeByte=Base64.decode(photo, Base64.URL_SAFE) ;
+                Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                Drawable drawable = new BitmapDrawable(bitmap);
+
+                item.setMarker(drawable);
+                list.add(item);
+            }
+
+            usersOverlay = new ItemizedIconOverlay(this, list, new ItemizedIconOverlay.OnItemGestureListener() {
+                @Override
+                public boolean onItemSingleTapUp(int index, Object item) {
+                    return false;
+                }
+
+                @Override
+                public boolean onItemLongPress(int index, Object item) {
+                    return false;
+                }
+            });
+            map.getOverlays().add(usersOverlay);
         }
     }
 }

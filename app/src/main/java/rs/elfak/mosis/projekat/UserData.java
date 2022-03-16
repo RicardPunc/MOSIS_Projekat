@@ -135,7 +135,7 @@ public class UserData {
         myRef.child(FIREBASE_CHILD).child(key).get().addOnSuccessListener (new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(@NonNull DataSnapshot dataSnapshot) {
-                //activity.logIn_btn.setEnabled(false);
+
                 if (dataSnapshot.getValue() != null) {
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
@@ -157,6 +157,45 @@ public class UserData {
                 }
             }
         } );
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getAllUsersLocations(Object act) {
+
+        HomeActivity activity = (HomeActivity) act;
+
+        List<User> users = new ArrayList<User>();
+
+        byte[] bytes = activity.user.getUsername().getBytes();
+        String userKey = Base64.getEncoder().encodeToString(bytes);
+
+        myRef.child(FIREBASE_CHILD).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    for (String key: map.keySet()) {
+                        if (!userKey.equals(key)) {
+                            Map<String, Object> userMap = (Map<String, Object>) map.get(key);
+                            String username = (String) userMap.get("username");
+                            String firstname = (String) userMap.get("firstname");
+                            String lastname = (String) userMap.get("lastname");
+                            String phone = (String) userMap.get("phone");
+                            String password = (String) userMap.get("password");
+                            String photo = (String) userMap.get("photo_str");
+                            Map<String, Double> location = (Map<String, Double>) userMap.get("location");
+                            GeoPoint locationPoint = new GeoPoint(location.get("latitude"), location.get("longitude"), location.get("altitude"));
+                            User user = new User(username, firstname, lastname, password, phone, photo, locationPoint);
+                            users.add(user);
+                        }
+                    }
+                    activity.showUsers(users);
+                }
+            }
+        });
+
+
 
     }
 }
