@@ -61,7 +61,11 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.drawing.OsmBitmapShader;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -84,7 +88,8 @@ public class HomeActivity extends AppCompatActivity {
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public MyLocationNewOverlay myLocationOverlay;
     public LocationManager locationManager;
-    public ItemizedIconOverlay usersOverlay;
+    public ItemizedOverlayWithFocus usersOverlay;
+    public ItemizedIconOverlay locationsOverlay;
     public NavigationView nv;
     public Bitmap bitmap;
 
@@ -169,6 +174,7 @@ public class HomeActivity extends AppCompatActivity {
             map.setMultiTouchControls(true);
 
             setMyLocationOverlay();
+            UserData.getInstance().getAllLocations(HomeActivity.this);
 
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -207,6 +213,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
     }
+
 
     private void showGpsAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -301,11 +308,43 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    public void setLocationsOverlay(List<UserLocation> locations) {
+        List<OverlayItem> list = new ArrayList<OverlayItem>();
+        if (locations.size() != 0) {
+            for (UserLocation location : locations) {
+                OverlayItem item = new OverlayItem(location.getName(), location.getDescription(), location.getLocation());
+
+                item.setMarker(getResources().getDrawable(org.osmdroid.library.R.drawable.marker_default));
+                list.add(item);
+            }
+
+            locationsOverlay = new ItemizedIconOverlay( list, new ItemizedIconOverlay.OnItemGestureListener() {
+                @Override
+                public boolean onItemSingleTapUp(int index, Object item) {
+                    return false;
+                }
+
+                @Override
+                public boolean onItemLongPress(int index, Object item) {
+                    return false;
+                }
+            }, this);
+            if (map.getOverlays().contains(locationsOverlay)) {
+                map.getOverlays().remove(locationsOverlay);
+            }
+
+            map.getOverlays().add(locationsOverlay);
+
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void showUsers(List<User> users) {
         List<OverlayItem> list = new ArrayList<OverlayItem>();
         if (users.size() != 0) {
             for (User user : users) {
-                OverlayItem item = new OverlayItem(user.getUsername(), user.getFirstname(), user.getLocation());
+                OverlayItem item = new OverlayItem("Username: " + user.getUsername(), "Score: " + user.getScore(), user.getLocation());
 
                 String photo = user.getPhoto_str();
                 byte [] encodeByte=Base64.decode(photo, Base64.URL_SAFE) ;
@@ -316,18 +355,27 @@ public class HomeActivity extends AppCompatActivity {
                 list.add(item);
             }
 
-            usersOverlay = new ItemizedIconOverlay(this, list, new ItemizedIconOverlay.OnItemGestureListener() {
+            usersOverlay = new ItemizedOverlayWithFocus( list, new ItemizedOverlayWithFocus.OnItemGestureListener() {
                 @Override
                 public boolean onItemSingleTapUp(int index, Object item) {
-                    return false;
+                    OverlayItem overlayItem = (OverlayItem) item;
+                    map.getController().animateTo(overlayItem.getPoint());
+                    usersOverlay.unSetFocusedItem();
+                    usersOverlay.setFocusedItem(index);
+                    return true;
                 }
 
                 @Override
                 public boolean onItemLongPress(int index, Object item) {
                     return false;
                 }
-            });
+            }, map.getContext());
+            usersOverlay.setFocusItemsOnTap(true);
+
             map.getOverlays().add(usersOverlay);
+
         }
     }
+
+
 }

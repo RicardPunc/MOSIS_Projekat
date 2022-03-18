@@ -35,7 +35,8 @@ public class UserData {
     private List<String> usernames;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-    private static final String FIREBASE_CHILD = "users";
+    private static final String USERS_CHILD = "users";
+    private static final String LOCATIONS_CHILD = "locations";
 
 
     private UserData(){
@@ -43,36 +44,19 @@ public class UserData {
         database = FirebaseDatabase.getInstance("https://mosis-projekat-4c877-default-rtdb.europe-west1.firebasedatabase.app/");
         myRef = database.getReference();
 
+        myRef.child(USERS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Get map of users in datasnapshot
+                getAllUsernames((Map<String,Object>) dataSnapshot.getValue());
+            }
 
-        myRef.child(FIREBASE_CHILD).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Get map of users in datasnapshot
-                        getAllUsernames((Map<String,Object>) dataSnapshot.getValue());
-                    }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //handle databaseError
+            }
+        });
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        //handle databaseError
-                    }
-                });
-
-
-//        myRef.child(FIREBASE_CHILD).addListenerForSingleValueEvent(parentEventListener);
-
-//        myRef.child(FIREBASE_CHILD).orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                User user = snapshot.getValue(User.class);
-//                System.out.println(snapshot.getKey() + " is named " + user.getFirstName());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
     }
 
     private void getAllUsernames(Map<String, Object> value) {
@@ -84,7 +68,7 @@ public class UserData {
 
                 //Get user map
                 Map singleUser = (Map) entry.getValue();
-                //Get phone field and append to list
+                //Get username field and append to list
                 allUsernames.add((String) singleUser.get("username"));
             }
 
@@ -98,7 +82,7 @@ public class UserData {
         byte[] bytes = user.getUsername().getBytes();
         String key = Base64.getEncoder().encodeToString(bytes);
 
-        myRef.child(FIREBASE_CHILD).child(key).setValue(user);
+        myRef.child(USERS_CHILD).child(key).setValue(user);
     }
 
 
@@ -118,7 +102,7 @@ public class UserData {
 
         if (usernames.contains(user.getUsername())) return -1;
 
-        myRef.child(FIREBASE_CHILD).child(key).setValue(user);
+        myRef.child(USERS_CHILD).child(key).setValue(user);
         usernames.add(user.getUsername());
 
         return 0;
@@ -132,7 +116,7 @@ public class UserData {
         MainActivity activity = (MainActivity) act;
 
         String key = Base64.getEncoder().encodeToString(username.getBytes());
-        myRef.child(FIREBASE_CHILD).child(key).get().addOnSuccessListener (new OnSuccessListener<DataSnapshot>() {
+        myRef.child(USERS_CHILD).child(key).get().addOnSuccessListener (new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(@NonNull DataSnapshot dataSnapshot) {
 
@@ -170,7 +154,7 @@ public class UserData {
         byte[] bytes = activity.user.getUsername().getBytes();
         String userKey = Base64.getEncoder().encodeToString(bytes);
 
-        myRef.child(FIREBASE_CHILD).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+        myRef.child(USERS_CHILD).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -195,7 +179,39 @@ public class UserData {
             }
         });
 
+    }
 
+    public void addLocation(UserLocation location) {
+        String key = myRef.push().getKey();
+        myRef.child(LOCATIONS_CHILD).child(key).setValue(location);
+    }
 
+    public void getAllLocations(Object act) {
+        HomeActivity activity = (HomeActivity) act;
+
+        myRef.child(LOCATIONS_CHILD).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null) {
+                    Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
+                    List<UserLocation> locations = new ArrayList<>();
+
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        Map singleLocation = (Map) entry.getValue();
+                        Map<String, Double> loc = (Map<String, Double>) singleLocation.get("location");
+                        GeoPoint pointLocation = new GeoPoint(loc.get("latitude"), loc.get("longitude"), loc.get("altitude"));
+                        UserLocation location = new UserLocation(singleLocation.get("name").toString(), singleLocation.get("description").toString(), pointLocation);
+                        locations.add(location);
+                    }
+
+                    activity.setLocationsOverlay(locations);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
