@@ -10,6 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.IconCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -23,6 +24,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -349,9 +355,11 @@ public class HomeActivity extends AppCompatActivity {
                 String photo = user.getPhoto_str();
                 byte [] encodeByte=Base64.decode(photo, Base64.URL_SAFE) ;
                 Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                Drawable drawable = new BitmapDrawable(bitmap);
+                bitmap = getCroppedBitmap(bitmap);
+                Drawable drawable = new BitmapDrawable(map.getResources(), bitmap);
 
                 item.setMarker(drawable);
+                item.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
                 list.add(item);
             }
 
@@ -375,6 +383,27 @@ public class HomeActivity extends AppCompatActivity {
             map.getOverlays().add(usersOverlay);
 
         }
+    }
+
+    public Bitmap getCroppedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
     }
 
 
