@@ -333,6 +333,8 @@ public class HomeActivity extends AppCompatActivity {
                     case "Peak" : icon = getDrawable(R.drawable.ic_peak); break;
                     case "Resting Place" : icon = getDrawable(R.drawable.ic_resting_place); break;
                     case "Viewport" : icon = getDrawable(R.drawable.ic_viewport); break;
+                    case "Springhead" : icon = getDrawable(R.drawable.ic_spring); break;
+                    case "Danger" : icon = getDrawable(R.drawable.ic_warning); break;
                 }
                 item.setMarker(icon);
                 list.add(item);
