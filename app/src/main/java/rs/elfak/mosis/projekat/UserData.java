@@ -1,18 +1,11 @@
 package rs.elfak.mosis.projekat;
 
 import android.os.Build;
-import android.provider.ContactsContract;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,14 +14,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.osmdroid.util.GeoPoint;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 public class UserData {
@@ -200,7 +188,7 @@ public class UserData {
                         Map singleLocation = (Map) entry.getValue();
                         Map<String, Double> loc = (Map<String, Double>) singleLocation.get("location");
                         GeoPoint pointLocation = new GeoPoint(loc.get("latitude"), loc.get("longitude"), loc.get("altitude"));
-                        UserLocation location = new UserLocation(singleLocation.get("name").toString(), singleLocation.get("description").toString(), pointLocation);
+                        UserLocation location = new UserLocation(singleLocation.get("name").toString(), singleLocation.get("description").toString(), pointLocation, singleLocation.get("type").toString());
                         locations.add(location);
                     }
 

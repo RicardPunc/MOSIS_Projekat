@@ -8,11 +8,13 @@ public class UserLocation implements Serializable {
     private String name;
     private String description;
     private GeoPoint location;
+    private String type;
 
-    public UserLocation(String name, String description, GeoPoint location) {
+    public UserLocation(String name, String description, GeoPoint location, String type) {
         this.name = name;
         this.description = description;
         this.location = location;
+        this.type = type;
     }
 
     public String getName() {
@@ -37,5 +39,13 @@ public class UserLocation implements Serializable {
 
     public void setLocation(GeoPoint location) {
         this.location = location;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

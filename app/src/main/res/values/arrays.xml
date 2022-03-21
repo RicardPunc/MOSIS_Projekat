@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="locationTypes">
+        <item>Peak</item>
+        <item>ViewPoint</item>
+        <item>Resting Place</item>
+        <item>Springhead</item>
+        <item>Danger</item>
+    </string-array>
+</resources>

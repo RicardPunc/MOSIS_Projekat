@@ -8,12 +8,17 @@ import android.icu.text.DecimalFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+
+import com.google.protobuf.LazyStringArrayList;
 
 import org.osmdroid.util.GeoPoint;
 
-import java.util.jar.Manifest;
+import java.util.List;
 
 public class EditPlaceActivity extends AppCompatActivity {
 
@@ -38,6 +43,8 @@ public class EditPlaceActivity extends AppCompatActivity {
         EditText desc_et = findViewById(R.id.edit_place_desc_et);
         Button cancel_btn = findViewById(R.id.edit_place_cancel_btn);
         Button finish_btn = findViewById(R.id.edit_place_finish_btn);
+        Spinner type_spinner = findViewById(R.id.edit_place_type_spinner);
+
 
         GeoPoint location = user.getLocation();
 
@@ -59,7 +66,8 @@ public class EditPlaceActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = name_et.getText().toString();
                 String desc = desc_et.getText().toString();
-                UserData.getInstance().addLocation(new UserLocation(name, desc, location));
+                UserData.getInstance().addLocation(new UserLocation(name, desc, location, type_spinner.getSelectedItem().toString()));
+                startActivity(new Intent(EditPlaceActivity.this, HomeActivity.class));
             }
         });
     }

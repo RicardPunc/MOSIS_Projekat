@@ -18,6 +18,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +26,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -62,6 +65,7 @@ import com.google.firebase.firestore.core.ComponentProvider;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.drawing.OsmBitmapShader;
@@ -69,7 +73,9 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -94,7 +100,6 @@ public class HomeActivity extends AppCompatActivity {
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public MyLocationNewOverlay myLocationOverlay;
     public LocationManager locationManager;
-    public ItemizedOverlayWithFocus usersOverlay;
     public ItemizedIconOverlay locationsOverlay;
     public NavigationView nv;
     public Bitmap bitmap;
@@ -104,6 +109,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
 
         Bundle extras = getIntent().getExtras();
         user = (User) extras.getSerializable("user");
@@ -148,8 +154,10 @@ public class HomeActivity extends AppCompatActivity {
                             UserData.getInstance().getAllUsersLocations(HomeActivity.this);
                         }
                         else {
-                            if (map.getOverlays().contains(usersOverlay)) {
-                                map.getOverlays().remove(usersOverlay);
+                            for (Overlay overlay : map.getOverlays()) {
+                                if (overlay != locationsOverlay && overlay != myLocationOverlay) {
+                                    map.getOverlays().remove(overlay);
+                                }
                             }
                         }
                         break;
@@ -216,7 +224,6 @@ public class HomeActivity extends AppCompatActivity {
             });
 
         }
-
 
     }
 
@@ -320,7 +327,14 @@ public class HomeActivity extends AppCompatActivity {
             for (UserLocation location : locations) {
                 OverlayItem item = new OverlayItem(location.getName(), location.getDescription(), location.getLocation());
 
-                item.setMarker(getResources().getDrawable(org.osmdroid.library.R.drawable.marker_default));
+                Drawable icon = getDrawable(org.osmdroid.library.R.drawable.marker_default);
+
+                switch (location.getType()) {
+                    case "Peak" : icon = getDrawable(R.drawable.ic_peak); break;
+                    case "Resting Place" : icon = getDrawable(R.drawable.ic_resting_place); break;
+                    case "Viewport" : icon = getDrawable(R.drawable.ic_viewport); break;
+                }
+                item.setMarker(icon);
                 list.add(item);
             }
 
@@ -342,15 +356,20 @@ public class HomeActivity extends AppCompatActivity {
             map.getOverlays().add(locationsOverlay);
 
         }
+
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void showUsers(List<User> users) {
-        List<OverlayItem> list = new ArrayList<OverlayItem>();
+        List<Marker> list = new ArrayList<>();
         if (users.size() != 0) {
             for (User user : users) {
-                OverlayItem item = new OverlayItem("Username: " + user.getUsername(), "Score: " + user.getScore(), user.getLocation());
+                Marker marker = new Marker(map);
+                marker.setPosition(user.getLocation());
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
+                marker.setTitle("User: " + user.getUsername() + "\nScore: " + user.getScore());
+                //marker.setSubDescription("Score: " + user.getScore());
 
                 String photo = user.getPhoto_str();
                 byte [] encodeByte=Base64.decode(photo, Base64.URL_SAFE) ;
@@ -358,29 +377,9 @@ public class HomeActivity extends AppCompatActivity {
                 bitmap = getCroppedBitmap(bitmap);
                 Drawable drawable = new BitmapDrawable(map.getResources(), bitmap);
 
-                item.setMarker(drawable);
-                item.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
-                list.add(item);
+                marker.setIcon(drawable);
+                map.getOverlays().add(marker);
             }
-
-            usersOverlay = new ItemizedOverlayWithFocus( list, new ItemizedOverlayWithFocus.OnItemGestureListener() {
-                @Override
-                public boolean onItemSingleTapUp(int index, Object item) {
-                    OverlayItem overlayItem = (OverlayItem) item;
-                    map.getController().animateTo(overlayItem.getPoint());
-                    usersOverlay.unSetFocusedItem();
-                    usersOverlay.setFocusedItem(index);
-                    return true;
-                }
-
-                @Override
-                public boolean onItemLongPress(int index, Object item) {
-                    return false;
-                }
-            }, map.getContext());
-            usersOverlay.setFocusItemsOnTap(true);
-
-            map.getOverlays().add(usersOverlay);
 
         }
     }

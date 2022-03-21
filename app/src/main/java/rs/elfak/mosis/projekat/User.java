@@ -20,7 +20,6 @@ public class User implements Serializable {
 
 
     public User(String username, String firstname, String lastname, String password, String phone, String photo) {
-        double asda = 0.0;
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;

@@ -28,6 +28,20 @@
         android:layout_height="wrap_content"
         android:hint="Enter Location Description"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Type" />
+
+    <Spinner
+        android:id="@+id/edit_place_type_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/locationTypes"
+        android:background="@android:drawable/btn_dropdown"
+
+        android:spinnerMode="dropdown"/>
+
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
