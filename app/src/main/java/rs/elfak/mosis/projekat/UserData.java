@@ -25,6 +25,7 @@ public class UserData {
     private DatabaseReference myRef;
     private static final String USERS_CHILD = "users";
     private static final String LOCATIONS_CHILD = "locations";
+    private static final String SESSIONS_CHILD = "sessions";
 
 
     private UserData(){
@@ -73,6 +74,65 @@ public class UserData {
         myRef.child(USERS_CHILD).child(key).setValue(user);
     }
 
+    public void isLoggedIn(Object act) {
+        MainActivity activity = (MainActivity) act;
+        String id = activity.getID();
+        myRef.child(SESSIONS_CHILD).child(id).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    String userKey =  (String) dataSnapshot.getValue();
+
+                    myRef.child(USERS_CHILD).child(userKey).get().addOnSuccessListener (new OnSuccessListener<DataSnapshot>() {
+                        @Override
+                        public void onSuccess(@NonNull DataSnapshot dataSnapshot) {
+
+                            if (dataSnapshot.getValue() != null) {
+                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                                String username = (String) map.get("username");
+                                String firstname = (String) map.get("firstname");
+                                String lastname = (String) map.get("lastname");
+                                String phone = (String) map.get("phone");
+                                String password = (String) map.get("password");
+                                String photo = (String) map.get("photo_str");
+                                Map<String, Double> location = (Map<String, Double>) map.get("location");
+                                GeoPoint locationPoint = new GeoPoint(location.get("latitude"), location.get("longitude"), location.get("altitude"));
+                                User user = new User(username, firstname, lastname, password, phone, photo, locationPoint);
+                                activity.logInSuccess(user);
+                            }
+                            else
+                            {
+                                activity.logInFailure();
+                            }
+                        }
+                    } );
+                }
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void logOut(User user) {
+        byte[] bytes = user.getUsername().getBytes();
+        String userKey = Base64.getEncoder().encodeToString(bytes);
+
+        myRef.child(SESSIONS_CHILD).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    for (String id : map.keySet()) {
+                        String key = (String) map.get(id);
+                        if (userKey.equals(key)) {
+                            myRef.child(SESSIONS_CHILD).child(id).removeValue();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
 
     private static class SingletonHolder {
         public static final UserData instance = new UserData();
@@ -96,8 +156,6 @@ public class UserData {
         return 0;
     }
 
-    static User success = null;
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void logIn(Object act, String username, String logInPassword) {
 
@@ -120,7 +178,10 @@ public class UserData {
                     Map<String, Double> location = (Map<String, Double>) map.get("location");
                     GeoPoint locationPoint = new GeoPoint(location.get("latitude"), location.get("longitude"), location.get("altitude"));
                     User user = new User(username, firstname, lastname, password, phone, photo, locationPoint);
-                    if (user.getPassword().equals(logInPassword)) activity.logInSuccess(user);
+                    if (user.getPassword().equals(logInPassword)) {
+                        myRef.child(SESSIONS_CHILD).child(activity.getID()).setValue(key);
+                        activity.logInSuccess(user);
+                    }
                     else activity.logInFailure();
                 }
                 else

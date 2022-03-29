@@ -41,6 +41,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.ContextMenu;
@@ -103,6 +104,7 @@ public class HomeActivity extends AppCompatActivity {
     public ItemizedIconOverlay locationsOverlay;
     public NavigationView nv;
     public Bitmap bitmap;
+    private CountDownTimer timer;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -151,15 +153,14 @@ public class HomeActivity extends AppCompatActivity {
                         });
 
                         if (item.isChecked()) {
-                            UserData.getInstance().getAllUsersLocations(HomeActivity.this);
+                            showAllUsersOverlays();
                         }
                         else {
-                            for (Overlay overlay : map.getOverlays()) {
-                                if (overlay != locationsOverlay && overlay != myLocationOverlay) {
-                                    map.getOverlays().remove(overlay);
-                                }
-                            }
+                            timer.cancel();
+                            removeUsersOverlay();
                         }
+
+
                         break;
                     }
                     case R.id.nav_scoreboard: {
@@ -167,7 +168,10 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.nav_logout: {
-                        Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                        UserData.getInstance().logOut(user);
+                        Intent i = new Intent(HomeActivity.this, MainActivity.class);
+                        startActivity(i);
+                        finish();
                         break;
                     }
 
@@ -227,6 +231,29 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void showAllUsersOverlays() {
+
+        timer = new CountDownTimer(Long.MAX_VALUE, 1000) {
+            @Override
+            public void onTick(long l) {
+                UserData.getInstance().getAllUsersLocations(HomeActivity.this);
+            }
+
+            @Override
+            public void onFinish() {
+                removeUsersOverlay();
+            }
+        }.start();
+    }
+
+    private void removeUsersOverlay() {
+        for (Overlay overlay : map.getOverlays()) {
+            if (overlay != locationsOverlay && overlay != myLocationOverlay) {
+                map.getOverlays().remove(overlay);
+            }
+        }
+    }
 
     private void showGpsAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -364,6 +391,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void showUsers(List<User> users) {
+        removeUsersOverlay();
         List<Marker> list = new ArrayList<>();
         if (users.size() != 0) {
             for (User user : users) {
@@ -407,5 +435,8 @@ public class HomeActivity extends AppCompatActivity {
         return output;
     }
 
-
+    @Override
+    public void onBackPressed() {
+        return;
+    }
 }

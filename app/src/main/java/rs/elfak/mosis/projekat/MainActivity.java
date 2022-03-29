@@ -7,12 +7,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -34,11 +36,14 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION};
 
+    private String android_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        UserData.getInstance().isLoggedIn(this);
 
         username_et = findViewById(R.id.username_login_et);
         password_et = findViewById(R.id.password_login_et);
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
+        finish();
     }
 
     public void logInFailure() {
@@ -117,4 +123,7 @@ public class MainActivity extends AppCompatActivity {
         logIn_btn.setEnabled(true);
     }
 
+    public String getID() {
+        return Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
 }
