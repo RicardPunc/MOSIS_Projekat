@@ -8,6 +8,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -22,6 +27,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Projekat">
+
+        <service
+            android:name=".BluetoothService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".AddFriendsActivity"
+            android:exported="false" />
         <activity
             android:name=".EditPlaceActivity"
             android:exported="false" />
@@ -31,7 +45,7 @@
         <activity
             android:name=".SignupActivity"
             android:exported="false"
-            android:label="@string/signup"/>
+            android:label="@string/signup" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

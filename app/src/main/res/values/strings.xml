@@ -11,6 +11,11 @@
     <string name="signup">Sign Up</string>
     <string name="new_object">Add new object here</string>
     <string name="show_all_users">Show All Users</string>
+    <string name="add_friends">Add Friends</string>
+    <string name="find_friends">Find Friends</string>
+    <string name="visibility">Visibility</string>
+    <string name="paired_devices">Paired devices</string>
+    <string name="available_devices">Available devices:</string>
 
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>

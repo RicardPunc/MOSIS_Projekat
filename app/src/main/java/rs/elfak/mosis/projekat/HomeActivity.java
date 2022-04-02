@@ -18,6 +18,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -117,7 +118,7 @@ public class HomeActivity extends AppCompatActivity {
         String photo = user.getPhoto_str();
         byte [] encodeByte=Base64.decode(photo, Base64.URL_SAFE) ;
         bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-        
+
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
 
@@ -169,6 +170,10 @@ public class HomeActivity extends AppCompatActivity {
                     case R.id.nav_logout: {
                         Toast.makeText(HomeActivity.this, "Logout", Toast.LENGTH_SHORT).show();
                         break;
+                    }
+                    case R.id.nav_add_friends: {
+                        Intent i = new Intent(HomeActivity.this, AddFriendsActivity.class);
+                        startActivity(i);
                     }
 
                 }
