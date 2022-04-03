@@ -24,6 +24,10 @@
         app:actionViewClass="android.widget.SearchView" />
 
     <item
+        android:id="@+id/nav_add_friends"
+        android:title="@string/add_friends" />
+
+    <item
         android:id="@+id/nav_logout"
         android:title="Logout" />
 
