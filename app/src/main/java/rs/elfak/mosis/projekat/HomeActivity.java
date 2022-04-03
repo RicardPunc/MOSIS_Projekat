@@ -177,6 +177,7 @@ public class HomeActivity extends AppCompatActivity {
                     }
                     case R.id.nav_add_friends: {
                         Intent i = new Intent(HomeActivity.this, AddFriendsActivity.class);
+                        i.putExtra("user",user);
                         startActivity(i);
                     }
 

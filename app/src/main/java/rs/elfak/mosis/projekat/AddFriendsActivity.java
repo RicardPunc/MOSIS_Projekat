@@ -50,6 +50,7 @@ public class AddFriendsActivity extends AppCompatActivity {
     public Button select_device_refresh;
     public ProgressBar progressBar_discover;
     public ListView select_device_list;
+    public User user = null;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("MissingPermission")
@@ -213,7 +214,7 @@ public class AddFriendsActivity extends AppCompatActivity {
 
     private void startBtConnection(BluetoothDevice bluetoothDevice, UUID uuid) {
         Bundle extras = getIntent().getExtras();
-        User user = (User) extras.getSerializable("user");
+        user = (User) extras.getSerializable("user");
         bluetoothService.mConnectThread = bluetoothService.new ConnectThread(bluetoothDevice,user,uuid);
     }
 
