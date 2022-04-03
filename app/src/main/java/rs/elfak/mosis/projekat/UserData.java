@@ -1,5 +1,6 @@
 package rs.elfak.mosis.projekat;
 
+import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -131,6 +132,43 @@ public class UserData {
                 }
             }
         });
+    }
+
+    public void getScores(Object act) {
+        ScoreboardActivity activity = (ScoreboardActivity) act;
+        List<User> users = new ArrayList<>();
+
+        myRef.child(USERS_CHILD).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    for (String key: map.keySet()) {
+
+                        Map<String, Object> userMap = (Map<String, Object>) map.get(key);
+                        String username = (String) userMap.get("username");
+                        String firstname = (String) userMap.get("firstname");
+                        String lastname = (String) userMap.get("lastname");
+                        String phone = (String) userMap.get("phone");
+                        Long score = (Long) userMap.get("score");
+                        String password = (String) userMap.get("password");
+                        String photo = (String) userMap.get("photo_str");
+                        Map<String, Double> location = (Map<String, Double>) userMap.get("location");
+                        GeoPoint locationPoint = new GeoPoint(location.get("latitude"), location.get("longitude"), location.get("altitude"));
+                        User user = new User(username, firstname, lastname, password, phone, photo, locationPoint, score);
+                        users.add(user);
+                        users.add(user);
+                        users.add(user);
+                        users.add(user);
+                        users.add(user);
+                    }
+                    activity.showScoreboard(users);
+                }
+            }
+        });
+
+
     }
 
 

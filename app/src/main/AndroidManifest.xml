@@ -23,6 +23,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Projekat">
         <activity
+            android:name=".ScoreboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".EditPlaceActivity"
             android:exported="false" />
         <activity
@@ -31,7 +34,7 @@
         <activity
             android:name=".SignupActivity"
             android:exported="false"
-            android:label="@string/signup"/>
+            android:label="@string/signup" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

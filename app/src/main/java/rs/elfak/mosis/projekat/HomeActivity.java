@@ -164,7 +164,10 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.nav_scoreboard: {
-                        Toast.makeText(HomeActivity.this, "Scoreboard", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(HomeActivity.this, ScoreboardActivity.class);
+                        i.putExtra("user", user);
+                        startActivity(i);
+
                         break;
                     }
                     case R.id.nav_logout: {

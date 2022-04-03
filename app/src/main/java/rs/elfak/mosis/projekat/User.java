@@ -14,7 +14,7 @@ public class User implements Serializable {
     private String lastname;
     private String password;
     private String phone;
-    private int score;
+    private Long score;
     private GeoPoint location;
     private String photo_str;
 
@@ -25,7 +25,7 @@ public class User implements Serializable {
         this.lastname = lastname;
         this.password = password;
         this.phone = phone;
-        this.score = 0;
+        this.score = 0l;
         this.location = new GeoPoint(36.114647, -115.172813, 610.000001);
         this.photo_str = photo;
     }
@@ -36,7 +36,18 @@ public class User implements Serializable {
         this.lastname = lastname;
         this.password = password;
         this.phone = phone;
-        this.score = 0;
+        this.score = 0l;
+        this.location = location;
+        this.photo_str = photo;
+    }
+
+    public User(String username, String firstname, String lastname, String password, String phone, String photo, GeoPoint location, Long score) {
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.password = password;
+        this.phone = phone;
+        this.score = score;
         this.location = location;
         this.photo_str = photo;
     }
@@ -97,11 +108,11 @@ public class User implements Serializable {
         this.location = location;
     }
 
-    public int getScore() {
+    public Long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Long score) {
         this.score = score;
     }
 }
